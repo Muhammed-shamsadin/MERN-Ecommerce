@@ -68,4 +68,71 @@ const authUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUSer, authUser };
+// GET user profile (requires JWT authentication)
+const getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// PUT or Update user profile (requires JWT authentication)
+const updateUserProfile = async (req, res) => {
+    const { name, email, password } = req.body;
+
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        //Update fields
+        user.name = name || user.name;
+        user.email = email || user.email;
+
+        if (password) {
+            user.password = await bcrypt.hash(password, 10);
+        }
+
+        const updateUser = await user.save();
+
+        const token = jwt.sign({ id: updateUser._id }, process.env.JWT_SECRET, {
+            expiresIn: '30d',
+        });
+
+        res.json({
+            _id: updateUser._id,
+            name: updateUser.name,
+            email: updateUser.email,
+            token,
+        });
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+//DELETE a yser by ID (admin only)
+const deleteUser = async (req, res) => {
+    
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.json({ message: 'User removed' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+
+
+module.exports = { registerUSer, authUser, getUserProfile, updateUserProfile, deleteUser };
