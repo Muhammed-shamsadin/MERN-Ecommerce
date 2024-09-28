@@ -17,8 +17,14 @@ app.use(cors()); // Enables Cross-origin Resource Sharing
 connectDB();
 
 // Import routes
-const authRoutes = require('./routes/auth'); // Adjust path based on your structure
+const authRoutes = require('./routes/authRoutes'); // Adjust path based on your structure
+const productRoutes = require('./routes/productRoutes');
+
+
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+
+
 
 // Basic route for testing the API
 app.get('/', (req, res) => {
