@@ -19,10 +19,11 @@ connectDB();
 // Import routes
 const authRoutes = require('./routes/authRoutes'); // Adjust path based on your structure
 const productRoutes = require('./routes/productRoutes');
-
+const orderRoutes = require('./routes/orderRoutes')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 
 
