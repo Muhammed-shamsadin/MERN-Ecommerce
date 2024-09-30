@@ -1,6 +1,6 @@
 // // Checkout.jsx
 // import React from 'react';
-// import CheckoutForm from './CheckoutForm';
+// import CheckoutForm from '../components/CheckoutForm';
 
 // const products = [
 //   {
