@@ -6,7 +6,7 @@ import Home from './pages/Home'; // Adjust based on your folder structure
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductList from './pages/ProductList'; // Example for product listing
-import ProductDetail from './pages/ProductDetail'; // Example for product details
+import ProductDetailPage from './pages/ProductDetailPage'; // Example for product details
 import CartPage from './pages/CartPage'; // Import CartPage
 // import CheckoutPage from './pages/Checkout'; // Import CheckoutPage
 
@@ -15,12 +15,12 @@ const App = () => {
     <Router>
       <div className="flex flex-col min-h-screen">
         <main className="flex-grow">
-          <Routes>
+          <Routes>                         
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/products" element={<ProductList />} />
-            <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/products/:id" element={<ProductDetailPage />} />
             <Route path="/cart" element={<CartPage />} /> {/* Add Cart route */}
             {/* <Route path="/checkout" element={<Checkout />} /> Add Checkout route */}
           </Routes>
