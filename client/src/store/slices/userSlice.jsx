@@ -9,28 +9,50 @@ const initialState = {
 };
 
 // Thunks for asynchronous actions
-export const registerUser = createAsyncThunk('user/register', async (userData) => {
-  const response = await axios.post('http://localhost:5000/api/auth/register', userData);
-  return response.data;
+export const registerUser = createAsyncThunk('user/register', async (userData, { rejectWithValue }) => {
+  try {
+    const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data.message || 'Registration failed');
+  }
 });
 
-export const loginUser = createAsyncThunk('user/login', async (credentials) => {
-  const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
-  return response.data;
+export const loginUser = createAsyncThunk('user/login', async (credentials, { rejectWithValue }) => {
+  try {
+    const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data.message || 'Login failed');
+  }
 });
 
-export const fetchUserProfile = createAsyncThunk('user/fetchProfile', async () => {
-  const response = await axios.get('http://localhost:5000/api/auth/profile', {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-  });
-  return response.data;
+export const fetchUserProfile = createAsyncThunk('user/fetchProfile', async (_, { rejectWithValue }) => {
+  const token = localStorage.getItem('token');
+  if (!token) return rejectWithValue('No token found');
+  
+  try {
+    const response = await axios.get('http://localhost:5000/api/auth/profile', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data.message || 'Fetching profile failed');
+  }
 });
 
-export const updateUserProfile = createAsyncThunk('user/updateProfile', async (userData) => {
-  const response = await axios.put('http://localhost:5000/api/auth/profile', userData, {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-  });
-  return response.data;
+export const updateUserProfile = createAsyncThunk('user/updateProfile', async (userData, { rejectWithValue }) => {
+  const token = localStorage.getItem('token');
+  if (!token) return rejectWithValue('No token found');
+  
+  try {
+    const response = await axios.put('http://localhost:5000/api/auth/profile', userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data.message || 'Profile update failed');
+  }
 });
 
 // Create user slice
@@ -57,7 +79,7 @@ const userSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       // Login
       .addCase(loginUser.pending, (state) => {
@@ -71,7 +93,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       // Fetch User Profile
       .addCase(fetchUserProfile.pending, (state) => {
@@ -84,7 +106,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
       // Update User Profile
       .addCase(updateUserProfile.pending, (state) => {
@@ -98,7 +120,7 @@ const userSlice = createSlice({
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       });
   },
 });
