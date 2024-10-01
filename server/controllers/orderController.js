@@ -12,13 +12,19 @@ const addOrderItems = async (req, res) => {
         totalPrice,
     } = req.body;
 
-    if (orderItems && orderItems.length === 0) {
+    // Check if orderItems are present
+    if (!orderItems || orderItems.length === 0) {
         return res.status(400).json({ message: 'No order items' });
     }
 
+    // Check if user exists
+    if (!req.user || !req.user._id) {
+        return res.status(401).json({ message: 'User not authorized' });
+    }
+
     try {
-        const order = new Order ({
-            user: req.user._id,
+        const order = new Order({
+            user: req.user._id, // Ensure user ID is set
             orderItems,
             shippingAddress,
             paymentMethod,
@@ -53,7 +59,6 @@ const getOrderByID = async (req, res) => {
     }
 };
 
-
 // PUT (UPDATE) to paid
 const updateOrderToPaid = async (req, res) => {
     try {
@@ -74,13 +79,12 @@ const updateOrderToPaid = async (req, res) => {
     }
 };
 
-
-// PUT (UPDATE) to paid
+// PUT (UPDATE) to delivered
 const updateOrderToDelivered = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id);
 
-        if(order) {
+        if (order) {
             order.isDelivered = true;
             order.deliveredAt = Date.now();
 
@@ -90,7 +94,7 @@ const updateOrderToDelivered = async (req, res) => {
             res.status(404).json({ message: 'Order not found' });
         }
     } catch (error) {
-        console.error('Error updating order to delivered: ', error);
+        console.error('Error updating order to delivered:', error);
         res.status(500).json({ message: 'Failed to update order' });
     }
 };
@@ -100,4 +104,4 @@ module.exports = {
     getOrderByID,
     updateOrderToPaid,
     updateOrderToDelivered,
-}
+};
