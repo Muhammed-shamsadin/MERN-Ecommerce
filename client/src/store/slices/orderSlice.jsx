@@ -45,6 +45,13 @@ const orderSlice = createSlice({
       // Clear the entire cart
       state.cartItems = [];
     },
+    updateCartQuantity(state, action) {
+      const { id, quantity } = action.payload; // Get the product ID and new quantity
+      const existingItem = state.cartItems.find(item => item.product === id);
+      if (existingItem) {
+        existingItem.qty = Number(quantity); // Update the quantity
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -63,5 +70,5 @@ const orderSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { addToCart, removeFromCart, clearCart } = orderSlice.actions;
+export const { addToCart, removeFromCart, clearCart, updateCartQuantity } = orderSlice.actions; // Export the new action
 export default orderSlice.reducer;
