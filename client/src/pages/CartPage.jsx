@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Cart from '../components/Cart';
-import { createOrder } from '../store/slices/orderSlice'; // Function to create order
+import { useNavigate } from 'react-router-dom';
+import { createOrder, removeFromCart, updateCartQuantity } from '../store/slices/orderSlice'; // Ensure updateCartQuantity is imported
 
 const CartPage = () => {
     const dispatch = useDispatch();
-    const { cartItems, loading, error } = useSelector((state) => state.order); // Updated to access order slice
+    const { cartItems, loading, error } = useSelector((state) => state.order);
 
     // Calculate subtotal from cart items
     const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0).toFixed(2);
+
+    const navigate = useNavigate(); // Initialize useNavigate
+    
 
     const handleCheckout = (e) => {
         e.preventDefault();
@@ -21,15 +25,15 @@ const CartPage = () => {
                 name: item.name,
                 qty: item.qty,
                 price: item.price,
-                product: item.product, // Ensure this corresponds to the product ID in your backend
+                product: item.product,
             })),
             shippingAddress: { 
                 address: 'Sample Address', 
                 city: 'Sample City', 
                 postalCode: '12345', 
-                country: 'Country' // Update with real data
+                country: 'Country' 
             },
-            paymentMethod: 'Credit Card', // Update as needed
+            paymentMethod: 'Credit Card',
             itemsPrice: subtotal,
             taxPrice: (subtotal * 0.1).toFixed(2), // Example tax calculation (10%)
             shippingPrice: (5.00).toFixed(2), // Example shipping cost
@@ -37,11 +41,23 @@ const CartPage = () => {
         };
 
         dispatch(createOrder(orderData)); // Send order to backend
+
+        navigate('/checkout');
+
+    };
+
+    // Handle removing an item from the cart
+    const handleRemoveItem = (id) => {
+        dispatch(removeFromCart(id)); // Call the removeFromCart action with the product ID
+    };
+
+    // Handle quantity change
+    const handleQuantityChange = (id, newQuantity) => {
+        dispatch(updateCartQuantity({ id, quantity: newQuantity })); // Dispatch action to update quantity
     };
 
     useEffect(() => {
         if (error) {
-            // Optionally handle the error (e.g., show a toast notification)
             alert('Error creating order: ' + error);
         }
     }, [error]);
@@ -56,7 +72,11 @@ const CartPage = () => {
                 ) : (
                     <form className="mt-12 max-w-lg mx-auto" onSubmit={handleCheckout}>
                         <section aria-labelledby="cart-heading">
-                            <Cart cartItems={cartItems} />
+                            <Cart 
+                                cartItems={cartItems} 
+                                onRemoveItem={handleRemoveItem} // Pass the function here
+                                onQuantityChange={handleQuantityChange} // Pass the quantity change handler
+                            />
                         </section>
 
                         <section aria-labelledby="summary-heading" className="mt-16 bg-gray-50 p-6 rounded-lg shadow-md">
@@ -91,6 +111,7 @@ const CartPage = () => {
                     </form>
                 )}
             </div>
+            <Footer />
         </div>
     );
 };
