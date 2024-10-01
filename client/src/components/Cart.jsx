@@ -1,10 +1,10 @@
 import React from 'react';
 import { XMarkIcon, CheckIcon, ClockIcon } from '@heroicons/react/20/solid';
 
-const Cart = ({ cartItems, onRemoveItem }) => {
+const Cart = ({ cartItems, onRemoveItem, onQuantityChange }) => {
   return (
     <ul role="list" className="divide-y divide-gray-200 border-b border-t border-gray-200">
-      {cartItems.map((product, productIdx) => (
+      {cartItems.map((product) => (
         <li key={product._id} className="flex py-6 sm:py-10">
           <div className="flex-shrink-0">
             <img
@@ -30,31 +30,23 @@ const Cart = ({ cartItems, onRemoveItem }) => {
                 <p className="mt-1 text-sm font-medium text-gray-900">${product.price.toFixed(2)}</p>
               </div>
               <div className="mt-4 sm:mt-0 sm:pr-9">
-                <label htmlFor={`quantity-${productIdx}`} className="sr-only">
+                <label htmlFor={`quantity-${product._id}`} className="sr-only">
                   Quantity, {product.name}
                 </label>
                 <select
-                  id={`quantity-${productIdx}`}
-                  name={`quantity-${productIdx}`}
+                  id={`quantity-${product._id}`} 
+                  name={`quantity-${product._id}`}
                   className="max-w-full rounded-md border border-gray-300 py-1.5 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                  defaultValue={product.qty}  // Set default value to current quantity
+                  value={product.qty}  // Set the selected value
+                  onChange={(e) => onQuantityChange(product._id, e.target.value)} // Call the handler on change
                 >
                   {[...Array(10).keys()].map((num) => (
-                    <option key={num} value={num + 1}>
+                    <option key={`${product._id}-${num}`} value={num + 1}>
                       {num + 1}
                     </option>
                   ))}
                 </select>
-                <div className="absolute right-0 top-0">
-                  <button 
-                    type="button" 
-                    className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
-                    onClick={() => onRemoveItem(product._id)}  // Call remove function with product ID
-                  >
-                    <span className="sr-only">Remove</span>
-                    <XMarkIcon className="h-5 w-5" aria-hidden="true" />
-                  </button>
-                </div>
+
               </div>
             </div>
             <p className="mt-4 flex space-x-2 text-sm text-gray-700">

@@ -1,14 +1,31 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { addToCart } from '../store/slices/orderSlice'; // Use addToCart from orderSlice
 import { StarIcon } from '@heroicons/react/20/solid';
-import { RadioGroup } from '@headlessui/react';
 
 const ProductDetail = ({ product }) => {
-  const [selectedCount, setSelectedCount] = useState(1); // Add to handle quantity
-  const reviews = { href: '#', average: 4, totalCount: 117 }; // Example, replace with actual data if available
+  const [selectedCount, setSelectedCount] = useState(1);
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize useNavigate
+  const reviews = { href: '#', average: 4, totalCount: 117 };
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
   }
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    // Dispatch the addToCart action with product ID, price, and quantity
+    dispatch(addToCart({ 
+      product: product._id, 
+      name: product.name,
+      price: product.price, 
+      qty: selectedCount 
+    }));
+    // Redirect to the cart page
+    navigate('/cart');
+  };
 
   return (
     <div className="bg-white">
@@ -19,7 +36,7 @@ const ProductDetail = ({ product }) => {
             <img
               src={product.image}
               alt={product.name}
-              className="h-64 w-full object-cover object-center" // Adjust height here
+              className="h-64 w-full object-cover object-center"
             />
           </div>
         </div>
@@ -33,7 +50,7 @@ const ProductDetail = ({ product }) => {
             ${product.price?.toFixed(2)}
           </p>
           <p className="mt-4 text-gray-600">{product.description}</p>
-          
+
           {/* Stock info */}
           <p className="mt-2 text-sm text-gray-500">
             {product.countInStock > 0 ? `${product.countInStock} in stock` : 'Out of stock'}
@@ -65,7 +82,7 @@ const ProductDetail = ({ product }) => {
             </div>
           </div>
 
-          <form className="mt-10">
+          <form className="mt-10" onSubmit={handleAddToCart}>
             {/* Quantity Selection */}
             <div className="mb-4">
               <h3 className="text-sm font-medium text-gray-900">Quantity</h3>
@@ -74,7 +91,7 @@ const ProductDetail = ({ product }) => {
                 min="1"
                 value={selectedCount}
                 onChange={(e) => setSelectedCount(e.target.value)}
-                className="mt-2 w-32 rounded-md border border-gray-300 p-2" // Set fixed width for input
+                className="mt-2 w-32 rounded-md border border-gray-300 p-2"
               />
             </div>
 
