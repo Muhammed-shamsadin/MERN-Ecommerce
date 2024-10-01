@@ -11,6 +11,8 @@ const initialState = {
 // Thunks for asynchronous actions
 export const createOrder = createAsyncThunk('order/createOrder', async (orderData, { rejectWithValue }) => {
   try {
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
     const { data } = await axios.post('http://localhost:5000/api/orders', orderData, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }, // Include token for authorization
     });
