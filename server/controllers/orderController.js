@@ -1,4 +1,4 @@
-const Order = require('../models/Order');
+import Order from '../models/Order.js';
 
 // CREATE (POST) an order
 const addOrderItems = async (req, res) => {
@@ -52,7 +52,6 @@ const getOrderByID = async (req, res) => {
         }
 
         res.status(200).json(order);
-
     } catch (error) {
         console.error('Error fetching order:', error);
         res.status(500).json({ message: 'Failed to fetch order' });
@@ -99,9 +98,22 @@ const updateOrderToDelivered = async (req, res) => {
     }
 };
 
-module.exports = {
+// GET all ORDERs
+const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find().populate('user', 'name email');
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ message: 'Failed to fetch orders' });
+    }
+};
+
+
+export {
     addOrderItems,
     getOrderByID,
     updateOrderToPaid,
-    updateOrderToDelivered,
+    updateOrderToDelivered, 
+    getAllOrders,
 };

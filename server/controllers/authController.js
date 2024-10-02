@@ -1,30 +1,24 @@
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // Register a new user
-const registerUSer = async (req, res) => {
+const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        // Check if the user already exists
         const userExists = await User.findOne({ email });
-
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create a new user
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
         });
 
-        // Respond with user data
         res.status(201).json({
             _id: user._id,
             name: user.name,
@@ -42,17 +36,13 @@ const authUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Check if the user exists
         const user = await User.findOne({ email });
 
-        // Validate the user and password
         if (user && (await bcrypt.compare(password, user.password))) {
-            // Generate a JWT token
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
                 expiresIn: '30d',
             });
 
-            // Respond with user data and token
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -90,7 +80,6 @@ const updateUserProfile = async (req, res) => {
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        //Update fields
         user.name = name || user.name;
         user.email = email || user.email;
 
@@ -98,16 +87,16 @@ const updateUserProfile = async (req, res) => {
             user.password = await bcrypt.hash(password, 10);
         }
 
-        const updateUser = await user.save();
+        const updatedUser = await user.save();
 
-        const token = jwt.sign({ id: updateUser._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: updatedUser._id }, process.env.JWT_SECRET, {
             expiresIn: '30d',
         });
 
         res.json({
-            _id: updateUser._id,
-            name: updateUser.name,
-            email: updateUser.email,
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
             token,
         });
     } catch (error) {
@@ -116,10 +105,47 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
+// GET all users (admin only)
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password'); // Exclude password
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
-//DELETE a yser by ID (admin only)
+// PUT or Update user role (admin only)
+const updateUserRole = async (req, res) => {
+    const { name, email, isAdmin } = req.body; // Assuming you want to update these fields
+
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Update fields
+        user.name = name || user.name;
+        user.email = email || user.email;
+        user.isAdmin = isAdmin !== undefined ? isAdmin : user.isAdmin; // Update admin status
+
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin,
+        });
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// DELETE a user by ID (admin only)
 const deleteUser = async (req, res) => {
-    
     try {
         const user = await User.findByIdAndDelete(req.params.id);
 
@@ -132,7 +158,12 @@ const deleteUser = async (req, res) => {
     }
 };
 
-
-
-
-module.exports = { registerUSer, authUser, getUserProfile, updateUserProfile, deleteUser };
+export {
+    registerUser,
+    authUser,
+    getUserProfile,
+    updateUserProfile,
+    getAllUsers,
+    updateUserRole,
+    deleteUser
+};
