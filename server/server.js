@@ -1,39 +1,46 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db'); // Adjust path based on your structure
+// server.mjs
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import connectDB from './config/db.js'; // Adjust path based on your structure
 
-// Load environment variables from .env file
+// Load environment variables
 dotenv.config();
 
-// Initialize Express app
+// Import Express and initialize the app
 const app = express();
 
 // Middleware
-app.use(express.json()); // Allows to handle JSON data
-app.use(cors()); // Enables Cross-origin Resource Sharing
+app.use(express.json());
+app.use(cors());
 
-// MongoDB connection
+// Connect to the database
 connectDB();
 
-// Import routes
-const authRoutes = require('./routes/authRoutes'); // Adjust path based on your structure
-const productRoutes = require('./routes/productRoutes');
-const orderRoutes = require('./routes/orderRoutes')
+// Load AdminJS configuration dynamically
+const start = async () => {
+  // Import the AdminJS configuration
+  const { adminRouter } = await import('./adminConfig.js');
 
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
+  // Use the AdminJS router
+  app.use('/admin', adminRouter);
 
+  // Routes
+  const authRoutes = await import('./routes/authRoutes.js'); // Ensure you use .mjs
+  const productRoutes = await import('./routes/productRoutes.js'); // Ensure you use .mjs
+  const orderRoutes = await import('./routes/orderRoutes.js'); // Ensure you use .mjs
 
+  app.use('/api/auth', authRoutes.default);
+  app.use('/api/products', productRoutes.default);
+  app.use('/api/orders', orderRoutes.default);
 
-// Basic route for testing the API
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
+  // Basic route
+  app.get('/', (req, res) => res.send('API is running...'));
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+  // Start server
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};
+
+// Call the start function and handle any errors
+start().catch((error) => console.error(error));
