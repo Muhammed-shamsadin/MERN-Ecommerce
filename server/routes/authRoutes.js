@@ -1,20 +1,32 @@
-const express = require('express');
+// authRoutes.mjs
+import express from 'express';
+import {
+    registerUser,
+    authUser,
+    getUserProfile,
+    updateUserProfile,
+    deleteUser,
+    getAllUsers,
+    updateUserRole
+} from '../controllers/authController.js'; // Ensure this path is correct
+import { protect, admin } from '../middleware/authMiddleware.js'; // Ensure this path is correct
+
 const router = express.Router();
-const { registerUSer, authUser, getUserProfile, updateUserProfile, deleteUser } = require('../controllers/authController');
-const { protect } = require('../middleware/authMiddleware');
 
 // Registration route
-router.post('/register', registerUSer);
+router.post('/register', registerUser);
 
 // Login route
 router.post('/login', authUser);
 
-
+// User profile routes
 router.get('/profile', protect, getUserProfile);
-
 router.put('/profile', protect, updateUserProfile);
 
-// Delete user (protected route)
-router.delete('/:id', protect, deleteUser); // Delete by user ID
+// Admin routes
+router.get('/', protect, admin, getAllUsers); // Get all users (admin only)
+router.put('/:id', protect, admin, updateUserRole); // Update user role (admin only)
+router.delete('/:id', protect, admin, deleteUser); // Delete user by ID (admin only)
 
-module.exports = router;
+// Export the router
+export default router;

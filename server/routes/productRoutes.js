@@ -1,19 +1,22 @@
-const express = require('express');
-const router = express.Router();
-const {
+// productRoutes.mjs
+import express from 'express';
+import {
     createProduct,
     getAllProducts,
     getProductById,
     updateProduct,
     deleteProduct,
-} = require('../controllers/productController');
-const { protect } = require('../middleware/authMiddleware');
+} from '../controllers/productController.js'; // Ensure this path is correct
+import { protect, admin } from '../middleware/authMiddleware.js'; // Ensure this path is correct
 
+const router = express.Router();
 
-router.post('/', protect, createProduct);
-router.put('/:id', protect, updateProduct);
-router.delete('/:id', protect, deleteProduct);
-router.get('/', getAllProducts);
-router.get('/:id', getProductById);
+// Product routes
+router.post('/', protect, admin, createProduct); // Only admins can create products
+router.put('/:id', protect, admin, updateProduct); // Only admins can update products
+router.delete('/:id', protect, admin, deleteProduct); // Only admins can delete products
+router.get('/', getAllProducts); // All users can get products
+router.get('/:id', getProductById); // All users can get product by ID
 
-module.exports = router;
+// Export the router
+export default router;
