@@ -47,6 +47,7 @@ const authUser = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                isAdmin: user.isAdmin,  // Add this line to send isAdmin field
                 token,
             });
         } else {
@@ -57,6 +58,7 @@ const authUser = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 // GET user profile (requires JWT authentication)
 const getUserProfile = async (req, res) => {
