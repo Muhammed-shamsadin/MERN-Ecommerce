@@ -10,18 +10,19 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage'; 
 import CheckoutPage from './pages/Checkout'; 
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 
 const App = () => {
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
         <main className="flex-grow">
-          <Routes>                          
+          <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/products" element={<ProductList />} />
-            
+
             <Route path="/products/:id" element={
               <ProtectedRoute>
                 <ProductDetailPage />
@@ -36,6 +37,15 @@ const App = () => {
               <ProtectedRoute>
                 <CheckoutPage />
               </ProtectedRoute>
+            } />
+            
+            {/* Admin Protected Route */}
+            <Route path="/admin" element={
+              <AdminProtectedRoute>
+                {/* The admin panel will be handled by AdminJS */}
+                {/* No need for Navigate or extra component */}
+                <div>Redirecting to Admin Panel...</div> 
+              </AdminProtectedRoute>
             } />
           </Routes>
         </main>
