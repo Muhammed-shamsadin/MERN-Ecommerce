@@ -6,13 +6,14 @@ const initialState = {
   user: null,
   loading: false,
   error: null,
+  isAdmin: false, // Added isAdmin property
 };
 
 // Thunks for asynchronous actions
 export const registerUser = createAsyncThunk('user/register', async (userData, { rejectWithValue }) => {
   try {
     const response = await axios.post('http://localhost:5000/api/auth/register', userData);
-    return response.data;
+    return response.data; // Ensure response includes isAdmin
   } catch (error) {
     return rejectWithValue(error.response.data.message || 'Registration failed');
   }
@@ -21,7 +22,7 @@ export const registerUser = createAsyncThunk('user/register', async (userData, {
 export const loginUser = createAsyncThunk('user/login', async (credentials, { rejectWithValue }) => {
   try {
     const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
-    return response.data;
+    return response.data; // Ensure response includes isAdmin
   } catch (error) {
     return rejectWithValue(error.response.data.message || 'Login failed');
   }
@@ -35,7 +36,7 @@ export const fetchUserProfile = createAsyncThunk('user/fetchProfile', async (_, 
     const response = await axios.get('http://localhost:5000/api/auth/profile', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return response.data; // Ensure response includes isAdmin
   } catch (error) {
     return rejectWithValue(error.response.data.message || 'Fetching profile failed');
   }
@@ -49,7 +50,7 @@ export const updateUserProfile = createAsyncThunk('user/updateProfile', async (u
     const response = await axios.put('http://localhost:5000/api/auth/profile', userData, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return response.data; // Ensure response includes isAdmin
   } catch (error) {
     return rejectWithValue(error.response.data.message || 'Profile update failed');
   }
@@ -62,6 +63,7 @@ const userSlice = createSlice({
   reducers: {
     logout(state) {
       state.user = null;
+      state.isAdmin = false; // Reset isAdmin on logout
       localStorage.removeItem('token');
     },
   },
@@ -75,6 +77,7 @@ const userSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        state.isAdmin = action.payload.isAdmin; // Capture isAdmin from response
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -89,6 +92,7 @@ const userSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        state.isAdmin = action.payload.isAdmin; // Capture isAdmin from response
         localStorage.setItem('token', action.payload.token);
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -103,6 +107,7 @@ const userSlice = createSlice({
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        state.isAdmin = action.payload.isAdmin; // Capture isAdmin from response
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
@@ -116,6 +121,7 @@ const userSlice = createSlice({
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload; // update user info in the state
+        state.isAdmin = action.payload.isAdmin; // Capture isAdmin from response
         localStorage.setItem('token', action.payload.token); // update token if it was renewed
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
