@@ -10,7 +10,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage'; 
 import CheckoutPage from './pages/Checkout'; 
 import ProtectedRoute from './components/ProtectedRoute';
-import AdminProtectedRoute from './components/AdminProtectedRoute';
+// import AdminProtectedRoute from './components/AdminProtectedRoute';
 
 const App = () => {
   return (
@@ -40,13 +40,13 @@ const App = () => {
             } />
             
             {/* Admin Protected Route */}
-            <Route path="/admin" element={
-              <AdminProtectedRoute>
+            {/* <Route path="/admin" element={ */}
+              {/* // <AdminProtectedRoute> */}
                 {/* The admin panel will be handled by AdminJS */}
                 {/* No need for Navigate or extra component */}
-                <div>Redirecting to Admin Panel...</div> 
-              </AdminProtectedRoute>
-            } />
+                {/* <div>Redirecting to Admin Panel...</div> </AdminProtectedRoute> */}
+              {/* </AdminProtectedRoute> */}
+            {/* // } /> */}
           </Routes>
         </main>
       </div>
