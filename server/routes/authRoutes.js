@@ -7,7 +7,8 @@ import {
     updateUserProfile,
     deleteUser,
     getAllUsers,
-    updateUserRole
+    updateUserRole,
+    adminLogin // Add this import
 } from '../controllers/authController.js'; // Ensure this path is correct
 import { protect, admin } from '../middleware/authMiddleware.js'; // Ensure this path is correct
 
@@ -24,6 +25,8 @@ router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 
 // Admin routes
+router.post('/admin/login', adminLogin); // Use the new admin login controller
+
 router.get('/', protect, admin, getAllUsers); // Get all users (admin only)
 router.put('/:id', protect, admin, updateUserRole); // Update user role (admin only)
 router.delete('/:id', protect, admin, deleteUser); // Delete user by ID (admin only)
