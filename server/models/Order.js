@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+// Order.js
+const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     user: {
@@ -60,4 +61,4 @@ const orderSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);
-export default Order;
+module.exports = Order; // Export using CommonJS
