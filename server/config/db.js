@@ -1,5 +1,4 @@
-// db.mjs
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
@@ -11,5 +10,5 @@ const connectDB = async () => {
     }
 };
 
-// Export the connectDB function as the default export
-export default connectDB;
+// Export the connectDB function
+module.exports = connectDB;
