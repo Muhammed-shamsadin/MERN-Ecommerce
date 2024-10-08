@@ -16,6 +16,7 @@
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.9",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
     "package.json": "^2.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
