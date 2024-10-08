@@ -1,6 +1,6 @@
-// authRoutes.mjs
-import express from 'express';
-import {
+// authRoutes.js
+const express = require('express');
+const {
     registerUser,
     authUser,
     getUserProfile,
@@ -8,9 +8,8 @@ import {
     deleteUser,
     getAllUsers,
     updateUserRole,
-    adminLogin // Add this import
-} from '../controllers/authController.js'; // Ensure this path is correct
-import { protect, admin } from '../middleware/authMiddleware.js'; // Ensure this path is correct
+} = require('../controllers/authController.js'); // Ensure this path is correct
+const { protect } = require('../middleware/authMiddleware.js'); // Ensure this path is correct
 
 const router = express.Router();
 
@@ -25,11 +24,11 @@ router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 
 // Admin routes
-router.post('/admin/login', adminLogin); // Use the new admin login controller
+// router.post('/admin/login', adminLogin); // Use the new admin login controller
 
-router.get('/', protect, admin, getAllUsers); // Get all users (admin only)
-router.put('/:id', protect, admin, updateUserRole); // Update user role (admin only)
-router.delete('/:id', protect, admin, deleteUser); // Delete user by ID (admin only)
+router.get('/', protect, getAllUsers); // Get all users (admin only)
+router.put('/:id', protect, updateUserRole); // Update user role (admin only)
+router.delete('/:id', protect, deleteUser); // Delete user by ID (admin only)
 
 // Export the router
-export default router;
+module.exports = router;
