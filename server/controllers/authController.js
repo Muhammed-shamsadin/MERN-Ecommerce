@@ -1,6 +1,6 @@
-import User from '../models/User.js';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+const User = require('../models/User.js');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -47,7 +47,7 @@ const authUser = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                isAdmin: user.isAdmin,  // Add this line to send isAdmin field
+                isAdmin: user.isAdmin, // Add this line to send isAdmin field
                 token,
             });
         } else {
@@ -58,7 +58,6 @@ const authUser = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 
 // GET user profile (requires JWT authentication)
 const getUserProfile = async (req, res) => {
@@ -160,33 +159,33 @@ const deleteUser = async (req, res) => {
     }
 };
 
-// Admin login
-const adminLogin = async (req, res) => {
-    const { username, password } = req.body;
+// // Admin login
+// const adminLogin = async (req, res) => {
+//     const { username, password } = req.body;
 
-    try {
-        const user = await User.findOne({ username });
+//     try {
+//         const user = await User.findOne({ username });
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
+//         if (!user || !(await bcrypt.compare(password, user.password))) {
+//             return res.status(401).json({ message: 'Invalid credentials' });
+//         }
 
-        if (!user.isAdmin) {
-            return res.status(403).json({ message: 'Access denied. Admins only.' });
-        }
+//         if (!user.isAdmin) {
+//             return res.status(403).json({ message: 'Access denied. Admins only.' });
+//         }
 
-        const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, {
-            expiresIn: '30d',
-        });
+//         const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, {
+//             expiresIn: '30d',
+//         });
 
-        res.json({ token });
-    } catch (error) {
-        console.error('Admin login error:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
+//         res.json({ token });
+//     } catch (error) {
+//         console.error('Admin login error:', error);
+//         res.status(500).json({ message: 'Server error' });
+//     }
+// };
 
-export {
+module.exports = {
     registerUser,
     authUser,
     getUserProfile,
@@ -194,5 +193,4 @@ export {
     getAllUsers,
     updateUserRole,
     deleteUser,
-    adminLogin,
 };
