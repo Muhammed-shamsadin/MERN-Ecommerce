@@ -1,4 +1,4 @@
-import Order from '../models/Order.js';
+const Order = require('../models/Order.js');
 
 // CREATE (POST) an order
 const addOrderItems = async (req, res) => {
@@ -98,7 +98,7 @@ const updateOrderToDelivered = async (req, res) => {
     }
 };
 
-// GET all ORDERs
+// GET all ORDERS
 const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find().populate('user', 'name email');
@@ -109,11 +109,10 @@ const getAllOrders = async (req, res) => {
     }
 };
 
-
-export {
+module.exports = {
     addOrderItems,
     getOrderByID,
     updateOrderToPaid,
-    updateOrderToDelivered, 
+    updateOrderToDelivered,
     getAllOrders,
 };

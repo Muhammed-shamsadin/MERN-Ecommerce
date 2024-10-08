@@ -1,4 +1,4 @@
-import Product from '../models/Product.js';
+const Product = require('../models/Product.js');
 
 // CREATE (POST) a new product (only accessible to authenticated users)
 const createProduct = async (req, res) => {
@@ -83,10 +83,10 @@ const deleteProduct = async (req, res) => {
     }
 };
 
-export {
+module.exports = {
     createProduct,
     getAllProducts,
     getProductById,
     updateProduct,
-    deleteProduct
+    deleteProduct,
 };
