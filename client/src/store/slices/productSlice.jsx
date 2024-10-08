@@ -9,24 +9,26 @@ const initialState = {
   error: null,
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Thunks for asynchronous actions
 
 // Fetch all products
 export const fetchProducts = createAsyncThunk('product/fetchProducts', async () => {
-  const response = await axios.get('http://localhost:5000/api/products');
+  const response = await axios.get(`${API_URL}/api/products`);
   return response.data;
 });
 
 // Fetch product by ID
 export const fetchProductById = createAsyncThunk('product/fetchProductById', async (id) => {
-  const response = await axios.get(`http://localhost:5000/api/products/${id}`);
+  const response = await axios.get(`${API_URL}/api/products/${id}`);
   return response.data;
 });
 
 // Create a new product
 export const createProduct = createAsyncThunk('product/createProduct', async (productData, { rejectWithValue }) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/products', productData, {
+    const response = await axios.post(`${API_URL}/api/products`, productData, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
     return response.data;
@@ -38,7 +40,7 @@ export const createProduct = createAsyncThunk('product/createProduct', async (pr
 // Update a product
 export const updateProduct = createAsyncThunk('product/updateProduct', async ({ id, productData }, { rejectWithValue }) => {
   try {
-    const response = await axios.put(`http://localhost:5000/api/products/${id}`, productData, {
+    const response = await axios.put(`${API_URL}/api/products/${id}`, productData, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
     return response.data;
@@ -50,7 +52,7 @@ export const updateProduct = createAsyncThunk('product/updateProduct', async ({ 
 // Delete a product
 export const deleteProduct = createAsyncThunk('product/deleteProduct', async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`http://localhost:5000/api/products/${id}`, {
+    await axios.delete(`${API_URL}/api/products/${id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
     return id;

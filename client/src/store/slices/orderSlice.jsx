@@ -8,12 +8,14 @@ const initialState = {
   error: null,
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Thunks for asynchronous actions
 export const createOrder = createAsyncThunk('order/createOrder', async (orderData, { rejectWithValue }) => {
   try {
     const token = localStorage.getItem('token');
     console.log('Token:', token);
-    const { data } = await axios.post('http://localhost:5000/api/orders', orderData, {
+    const { data } = await axios.post(`${API_URL}/api/orders`, orderData, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }, // Include token for authorization
     });
     return data; // Return order data

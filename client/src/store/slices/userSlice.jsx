@@ -9,10 +9,12 @@ const initialState = {
   isAdmin: false, // Added isAdmin property
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Thunks for asynchronous actions
 export const registerUser = createAsyncThunk('user/register', async (userData, { rejectWithValue }) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+    const response = await axios.post(`${API_URL}/api/auth/register`, userData);
     return response.data; // Ensure response includes isAdmin
   } catch (error) {
     return rejectWithValue(error.response.data.message || 'Registration failed');
@@ -21,7 +23,7 @@ export const registerUser = createAsyncThunk('user/register', async (userData, {
 
 export const loginUser = createAsyncThunk('user/login', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/auth/login', credentials);
+    const response = await axios.post(`${API_URL}/api/auth/login`, credentials);
     return response.data; // Ensure response includes isAdmin
   } catch (error) {
     return rejectWithValue(error.response.data.message || 'Login failed');
@@ -33,7 +35,7 @@ export const fetchUserProfile = createAsyncThunk('user/fetchProfile', async (_, 
   if (!token) return rejectWithValue('No token found');
   
   try {
-    const response = await axios.get('http://localhost:5000/api/auth/profile', {
+    const response = await axios.get(`${API_URL}/api/auth/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data; // Ensure response includes isAdmin
@@ -47,7 +49,7 @@ export const updateUserProfile = createAsyncThunk('user/updateProfile', async (u
   if (!token) return rejectWithValue('No token found');
   
   try {
-    const response = await axios.put('http://localhost:5000/api/auth/profile', userData, {
+    const response = await axios.put(`${API_URL}/api/auth/profile`, userData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data; // Ensure response includes isAdmin
