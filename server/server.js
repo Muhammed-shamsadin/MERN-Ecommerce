@@ -1,8 +1,8 @@
-// server.mjs
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import connectDB from './config/db.js'; // Adjust path based on your structure
+// server.js
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db.js'); // Adjust path based on your structure
 
 // Load environment variables
 dotenv.config();
@@ -17,30 +17,31 @@ app.use(cors());
 // Connect to the database
 connectDB();
 
-// Load AdminJS configuration dynamically
-const start = async () => {
-  // Import the AdminJS configuration
-  const { adminRouter } = await import('./adminConfig.js');
+// Start the server
+const start = () => {
+  try {
+    console.log('Starting server...');
 
-  // Use the AdminJS router
-  app.use('/admin', adminRouter);
+    // Import Routes
+    const authRoutes = require('./routes/authRoutes.js'); // Change to require
+    const productRoutes = require('./routes/productRoutes.js'); // Change to require
+    const orderRoutes = require('./routes/orderRoutes.js'); // Change to require
 
-  // Routes
-  const authRoutes = await import('./routes/authRoutes.js'); // Ensure you use .mjs
-  const productRoutes = await import('./routes/productRoutes.js'); // Ensure you use .mjs
-  const orderRoutes = await import('./routes/orderRoutes.js'); // Ensure you use .mjs
+    // Use the imported routers
+    app.use('/api/auth', authRoutes);
+    app.use('/api/products', productRoutes);
+    app.use('/api/orders', orderRoutes);
 
-  app.use('/api/auth', authRoutes.default);
-  app.use('/api/products', productRoutes.default);
-  app.use('/api/orders', orderRoutes.default);
+    // Basic route
+    app.get('/', (req, res) => res.send('API is running...'));
 
-  // Basic route
-  app.get('/', (req, res) => res.send('API is running...'));
-
-  // Start server
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    // Start server
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  } catch (error) {
+    console.error('Error during server startup:', error);
+  }
 };
 
-// Call the start function and handle any errors
-start().catch((error) => console.error(error));
+// Call the start function
+start();
